@@ -43,7 +43,7 @@ class Watermark extends Module
 	{
 		$this->name = 'watermark';
 		$this->tab = 'administration';
-		$this->version = '0.7';
+		$this->version = '0.8';
 		$this->author = 'PrestaShop';
 
 		$this->bootstrap = true;
@@ -52,7 +52,6 @@ class Watermark extends Module
 		$this->displayName = $this->l('Watermark');
 		$this->description = $this->l('Protect image by watermark.');
 		$this->confirmUninstall = $this->l('Are you sure you want to delete your details ?');
-		$this->ps_versions_compliancy = array('min' => '1.5', 'max' => '1.5.6.2');
 
 		$config = Configuration::getMultiple(
 			array(
