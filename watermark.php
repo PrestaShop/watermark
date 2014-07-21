@@ -112,9 +112,9 @@ class Watermark extends Module
 				$id_image_type['WATERMARK_TYPES_'.(int)$type['id_image_type']] = true;
 
 		if (empty($transparency))
-			$this->_postErrors[] = $this->l('Transparency required.');
+			$this->_postErrors[] = $this->l('Opacity required.');
 		elseif ($transparency < 1 || $transparency > 100)
-			$this->_postErrors[] = $this->l('Transparency is not in allowed range.');
+			$this->_postErrors[] = $this->l('Opacity is not in allowed range.');
 
 		if (empty($yalign))
 			$this->_postErrors[] = $this->l('Y-Align is required.');
@@ -321,7 +321,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
 					),
 					array(
 						'type' => 'text',
-						'label' => $this->l('Watermark transparency (1-100)'),
+						'label' => $this->l('Watermark opacity (1-100)'),
 						'name' => 'transparency',
 						'class' => 'fixed-width-md',
 					),
