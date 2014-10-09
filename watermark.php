@@ -51,7 +51,7 @@ class Watermark extends Module
 
 		$this->displayName = $this->l('Watermark');
 		$this->description = $this->l('Protect image by watermark.');
-		$this->confirmUninstall = $this->l('Are you sure you want to delete your details ?');
+		$this->confirmUninstall = $this->l('Are you sure you want to delete your details?');
 
 		$config = Configuration::getMultiple(
 			array(
@@ -73,7 +73,7 @@ class Watermark extends Module
 		$this->transparency = isset($config['WATERMARK_TRANSPARENCY']) ? $config['WATERMARK_TRANSPARENCY'] : 60;
 
 		if (!isset($this->transparency) || !isset($this->xAlign) || !isset($this->yAlign))
-			$this->warning = $this->l('Watermark image must be uploaded in order for this module to work correctly.');
+			$this->warning = $this->l('Watermark image must be uploaded for this module to work correctly.');
 	}
 
 	public function install()
@@ -272,7 +272,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
 		if (!$image = imagecreatefromjpeg($imagepath))
 			return false;
 		if (!$imagew = imagecreatefromgif($watermarkpath))
-			die ($this->l('The watermark image is not a real gif, please CONVERT the image.'));
+			die ($this->l('The watermark image is not a real GIF, please CONVERT the image.'));
 		list($watermarkWidth, $watermarkHeight) = getimagesize($watermarkpath);
 		list($imageWidth, $imageHeight) = getimagesize($imagepath);
 		if ($this->xAlign == 'middle')
