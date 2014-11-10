@@ -269,7 +269,10 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
 	private function watermarkByImage($imagepath, $watermarkpath, $outputpath)
 	{
 		$Xoffset = $Yoffset = $xpos = $ypos = 0;
-		if (!$image = imagecreatefromjpeg($imagepath))
+
+		list($tmp_width, $tmp_height, $type) = getimagesize($imagepath);
+		$image = ImageManager::create($type, $imagepath);
+		if (!$image)
 			return false;
 		if (!$imagew = imagecreatefromgif($watermarkpath))
 			die ($this->l('The watermark image is not a real GIF, please CONVERT the image.'));
@@ -290,7 +293,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
 		if (!imagecopymerge($image, $imagew, $xpos, $ypos, 0, 0, $watermarkWidth, $watermarkHeight, $this->transparency))
 			return false;
 
-		return imagejpeg($image, $outputpath, 100);
+		return ImageManager::write($type, $image, $outputpath);
 	}
 
 	public function renderForm()
