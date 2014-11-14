@@ -293,6 +293,21 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
 		if (!imagecopymerge($image, $imagew, $xpos, $ypos, 0, 0, $watermarkWidth, $watermarkHeight, $this->transparency))
 			return false;
 
+		switch($type)
+		{
+			case IMAGETYPE_PNG:
+				$type = 'png';
+			break;
+			case IMAGETYPE_GIF:
+				$type = 'gif';
+			break;
+			case IMAGETYPE_JPEG:
+				$type = 'jpg';
+			break;
+		}
+
+		imagealphablending($image, false);
+		imagesavealpha($image, true);
 		return ImageManager::write($type, $image, $outputpath);
 	}
 
