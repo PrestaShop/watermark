@@ -58,7 +58,9 @@ class Watermark extends Module
 				'WATERMARK_TYPES',
 				'WATERMARK_Y_ALIGN',
 				'WATERMARK_X_ALIGN',
-				'WATERMARK_TRANSPARENCY'
+				'WATERMARK_TRANSPARENCY',
+				'WATERMARK_LOGGED',
+				'WATERMARK_HASH'
 			)
 		);
 		if (!isset($config['WATERMARK_TYPES']))
@@ -71,6 +73,9 @@ class Watermark extends Module
 		$this->yAlign = isset($config['WATERMARK_Y_ALIGN']) ? $config['WATERMARK_Y_ALIGN'] : '';
 		$this->xAlign = isset($config['WATERMARK_X_ALIGN']) ? $config['WATERMARK_X_ALIGN'] : '';
 		$this->transparency = isset($config['WATERMARK_TRANSPARENCY']) ? $config['WATERMARK_TRANSPARENCY'] : 60;
+
+		if (!isset($config['WATERMARK_HASH']))
+			Configuration::updateValue('WATERMARK_HASH',Tools::passwdGen(10));
 
 		if (!isset($this->transparency) || !isset($this->xAlign) || !isset($this->yAlign))
 			$this->warning = $this->l('Watermark image must be uploaded for this module to work correctly.');
@@ -96,6 +101,7 @@ class Watermark extends Module
 			&& Configuration::deleteByName('WATERMARK_TYPES')
 			&& Configuration::deleteByName('WATERMARK_TRANSPARENCY')
 			&& Configuration::deleteByName('WATERMARK_Y_ALIGN')
+			&& Configuration::deleteByName('WATERMARK_LOGGED')
 			&& Configuration::deleteByName('WATERMARK_X_ALIGN'));
 	}
 
@@ -149,6 +155,7 @@ class Watermark extends Module
 		Configuration::updateValue('WATERMARK_Y_ALIGN', Tools::getValue('yalign'));
 		Configuration::updateValue('WATERMARK_X_ALIGN', Tools::getValue('xalign'));
 		Configuration::updateValue('WATERMARK_TRANSPARENCY', Tools::getValue('transparency'));
+		Configuration::updateValue('WATERMARK_LOGGED', Tools::getValue('WATERMARK_LOGGED'));
 
 		if (Shop::getContext() == Shop::CONTEXT_SHOP)
 			$str_shop = '-'.(int)$this->context->shop->id;
@@ -247,6 +254,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
 		$image = new Image($params['id_image']);
 		$image->id_product = $params['id_product'];
 		$file = _PS_PROD_IMG_DIR_.$image->getExistingImgPath().'-watermark.jpg';
+		$file_org = _PS_PROD_IMG_DIR_.$image->getExistingImgPath().'.jpg';
 
 		$str_shop = '-'.(int)$this->context->shop->id;
 		if (Shop::getContext() != Shop::CONTEXT_SHOP || !Tools::file_exists_cache(dirname(__FILE__).'/watermark'.$str_shop.'.gif'))
@@ -255,11 +263,18 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
 		//first make a watermark image
 		$return = $this->watermarkByImage(_PS_PROD_IMG_DIR_.$image->getExistingImgPath().'.jpg', dirname(__FILE__).'/watermark'.$str_shop.'.gif', $file, 23, 0, 0, 'right');
 
+		if (!Configuration::get('WATERMARK_HASH'))
+			Configuration::updateValue('WATERMARK_HASH',Tools::passwdGen(10));
+
 		//go through file formats defined for watermark and resize them
 		foreach ($this->imageTypes as $imageType)
 		{
 			$newFile = _PS_PROD_IMG_DIR_.$image->getExistingImgPath().'-'.stripslashes($imageType['name']).'.jpg';
 			if (!ImageManager::resize($file, $newFile, (int)$imageType['width'], (int)$imageType['height']))
+				$return = false;
+
+			$new_file_org = _PS_PROD_IMG_DIR_.$image->getExistingImgPath().'-'.stripslashes($imageType['name']).'-'.Configuration::get('WATERMARK_HASH').'.jpg';
+			if (!ImageManager::resize($file_org, $new_file_org, (int)$imageType['width'], (int)$imageType['height']))
 				$return = false;
 		}
 
@@ -401,6 +416,24 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
 							'name' => 'label'
 						)
 					),
+					array(
+						'type' => "switch",
+						'name' => 'WATERMARK_LOGGED',
+						'label' => $this->l('Logged in customers see images without watermark'),
+						'is_bool' => true,
+						'values' => array(
+								array(
+									'id' => 'active_on',
+									'value' => 1,
+									'label' => $this->l('Enabled')
+								),
+								array(
+									'id' => 'active_off',
+									'value' => 0,
+									'label' => $this->l('Disabled')
+								),
+							),
+					),
 				),
 				'submit' => array(
 					'title' => $this->l('Save'),
@@ -435,6 +468,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
 			'transparency' => Tools::getValue('transparency', Configuration::get('WATERMARK_TRANSPARENCY')),
 			'xalign' => Tools::getValue('xalign', Configuration::get('WATERMARK_X_ALIGN')),
 			'yalign' => Tools::getValue('yalign', Configuration::get('WATERMARK_Y_ALIGN')),
+			'WATERMARK_LOGGED' => Tools::getValue('WATERMARK_LOGGED', Configuration::get('WATERMARK_LOGGED')),
 		);
 		//get all images type available
 		$types = ImageType::getImagesTypes('products');
