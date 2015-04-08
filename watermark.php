@@ -267,7 +267,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
 			Configuration::updateValue('WATERMARK_HASH',Tools::passwdGen(10));
 
 		if (isset($params['image_type']) && is_array($params['image_type']))
-			$this->imageTypes = $params['image_type'];
+			$this->imageTypes = array_intersect($this->imageTypes, $params['image_type']);
 
 		//go through file formats defined for watermark and resize them
 		foreach ($this->imageTypes as $imageType)
