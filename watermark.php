@@ -210,10 +210,12 @@ class Watermark extends Module
 	{
 		$admin_dir = $this->getAdminDir();
 		$source = "\n# start ~ module watermark section
+<IfModule mod_rewrite.c>
 Options +FollowSymLinks
 RewriteEngine On
 RewriteCond expr \"! %{HTTP_REFERER} -strmatch '*://%{HTTP_HOST}*/$admin_dir/*'\"
 RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
+</IfModule>
 # end ~ module watermark section\n";
 
 		$path = _PS_ROOT_DIR_.'/.htaccess';
