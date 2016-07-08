@@ -271,16 +271,21 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
 		if (isset($params['image_type']) && is_array($params['image_type']))
 			$this->imageTypes = array_intersect($this->imageTypes, $params['image_type']);
 
+		//Getting watermark enabled image type IDs
+		$watermark_types = explode(',', Configuration::get('WATERMARK_TYPES'));
+
 		//go through file formats defined for watermark and resize them
 		foreach ($this->imageTypes as $imageType)
 		{
-			$newFile = _PS_PROD_IMG_DIR_.$image->getExistingImgPath().'-'.stripslashes($imageType['name']).'.jpg';
-			if (!ImageManager::resize($file, $newFile, (int)$imageType['width'], (int)$imageType['height']))
-				$return = false;
-
-			$new_file_org = _PS_PROD_IMG_DIR_.$image->getExistingImgPath().'-'.stripslashes($imageType['name']).'-'.Configuration::get('WATERMARK_HASH').'.jpg';
-			if (!ImageManager::resize($file_org, $new_file_org, (int)$imageType['width'], (int)$imageType['height']))
-				$return = false;
+			if (in_array($imageType['id_image_type'], $watermark_types)) {
+				$newFile = _PS_PROD_IMG_DIR_.$image->getExistingImgPath().'-'.stripslashes($imageType['name']).'.jpg';
+				if (!ImageManager::resize($file, $newFile, (int)$imageType['width'], (int)$imageType['height']))
+					$return = false;
+	
+				$new_file_org = _PS_PROD_IMG_DIR_.$image->getExistingImgPath().'-'.stripslashes($imageType['name']).'-'.Configuration::get('WATERMARK_HASH').'.jpg';
+				if (!ImageManager::resize($file_org, $new_file_org, (int)$imageType['width'], (int)$imageType['height']))
+					$return = false;
+			}
 		}
 
 		return $return;
