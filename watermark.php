@@ -37,7 +37,6 @@ class Watermark extends Module
 	private $xAlign;
 	private $transparency;
 	private $imageTypes = array();
-	private $watermarkTypes;
 
 	public function __construct()
 	{
@@ -168,8 +167,11 @@ class Watermark extends Module
 			if ($error = ImageManager::validateUpload($_FILES['PS_WATERMARK']))
 				$this->_errors[] = $error;
 			/* Copy new watermark */
-			elseif (!copy($_FILES['PS_WATERMARK']['tmp_name'], dirname(__FILE__).'/watermark'.$str_shop.'.gif'))
-				$this->_errors[] = sprintf($this->l('An error occurred while uploading watermark: %1$s to %2$s'), $_FILES['PS_WATERMARK']['tmp_name'], dirname(__FILE__).'/watermark'.$str_shop.'.gif');
+			elseif (!copy($_FILES['PS_WATERMARK']['tmp_name'], dirname(__FILE__).'/'.$this->name.$str_shop.'.gif'))
+				$this->_errors[] = sprintf($this->l('An error occurred while uploading watermark: %1$s to %2$s'),
+                    $_FILES['PS_WATERMARK']['tmp_name'],
+                    dirname(__FILE__).'/'.$this->name.$str_shop.'.gif'
+                );
 		}
 
 		if ($this->_errors)
@@ -259,11 +261,11 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
 		$file_org = _PS_PROD_IMG_DIR_.$image->getExistingImgPath().'.jpg';
 
 		$str_shop = '-'.(int)$this->context->shop->id;
-		if (Shop::getContext() != Shop::CONTEXT_SHOP || !Tools::file_exists_cache(dirname(__FILE__).'/watermark'.$str_shop.'.gif'))
+		if (Shop::getContext() != Shop::CONTEXT_SHOP || !Tools::file_exists_cache(dirname(__FILE__).'/'.$this->name.$str_shop.'.gif'))
 			$str_shop = '';
 
 		//first make a watermark image
-		$return = $this->watermarkByImage(_PS_PROD_IMG_DIR_.$image->getExistingImgPath().'.jpg', dirname(__FILE__).'/watermark'.$str_shop.'.gif', $file, 23, 0, 0, 'right');
+		$return = $this->watermarkByImage(_PS_PROD_IMG_DIR_.$image->getExistingImgPath().'.jpg', dirname(__FILE__).'/'.$this->name.$str_shop.'.gif', $file, 23, 0, 0, 'right');
 
 		if (!Configuration::get('WATERMARK_HASH'))
 			Configuration::updateValue('WATERMARK_HASH',Tools::passwdGen(10));
