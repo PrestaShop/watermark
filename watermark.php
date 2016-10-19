@@ -43,7 +43,7 @@ class Watermark extends Module
     {
         $this->name = 'watermark';
         $this->tab = 'administration';
-        $this->version = '1.0.4';
+        $this->version = '1.1.0';
         $this->author = 'PrestaShop';
 
         $this->bootstrap = true;
