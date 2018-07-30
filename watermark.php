@@ -241,7 +241,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
 # end ~ module watermark section\n";
 
         $path = _PS_ROOT_DIR_.'/.htaccess';
-        file_put_contents($path, $source, FILE_APPEND);
+        file_put_contents($path, $source . file_get_contents($path));
     }
 
     public function getContent()
