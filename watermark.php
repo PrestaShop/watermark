@@ -181,8 +181,8 @@ class Watermark extends Module
         }
 
         if (isset($_FILES['PS_WATERMARK']['tmp_name']) && !empty($_FILES['PS_WATERMARK']['tmp_name'])) {
-            if (!ImageManager::isRealImage($_FILES['PS_WATERMARK']['tmp_name'], $_FILES['PS_WATERMARK']['type'], ['image/gif'])) {
-                $this->_postErrors[] = $this->trans('Image must be in GIF format.', [], 'Modules.Watermark.Admin');
+            if (!ImageManager::isRealImage($_FILES['PS_WATERMARK']['tmp_name'], $_FILES['PS_WATERMARK']['type'], ['image/gif', 'image/jpeg', 'image/jpg', 'image/png'])) {
+                $this->_postErrors[] = $this->trans('Image must be in JPEG, PNG or GIF format.', [], 'Modules.Watermark.Admin');
             }
         }
 
@@ -210,9 +210,9 @@ class Watermark extends Module
         Configuration::updateValue('WATERMARK_LOGGED', Tools::getValue('WATERMARK_LOGGED'));
 
         if (Shop::getContext() == Shop::CONTEXT_SHOP) {
-            $str_shop = '-'.(int) $this->context->shop->id;
+            $strShop = '-'.(int) $this->context->shop->id;
         } else {
-            $str_shop = '';
+            $strShop = '';
         }
 
         // Submitted watermark
@@ -221,10 +221,10 @@ class Watermark extends Module
             if ($error = ImageManager::validateUpload($_FILES['PS_WATERMARK'])) {
                 $this->_errors[] = $error;
             } /* Copy new watermark */
-            elseif (!@copy($_FILES['PS_WATERMARK']['tmp_name'], dirname(__FILE__).'/'.$this->name.$str_shop.'.gif')) {
+            elseif (!@copy($_FILES['PS_WATERMARK']['tmp_name'], dirname(__FILE__).'/'.$this->name.$strShop.'.'.static::getWatermarkExtension($strShop))) {
                 $this->_errors[] = sprintf($this->trans('An error occurred while uploading watermark: %1$s to %2$s', [], 'Modules.Watermark.Admin'),
                     $_FILES['PS_WATERMARK']['tmp_name'],
-                    dirname(__FILE__).'/'.$this->name.$str_shop.'.gif'
+                    dirname(__FILE__).'/'.$this->name.$strShop.'.'.static::getWatermarkExtension($strShop)
                 ).' ['.error_get_last()['message'].']';
             }
         }
@@ -361,13 +361,21 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
         $file = _PS_PROD_IMG_DIR_.$image->getExistingImgPath().'-watermark.jpg';
         $fileOrg = _PS_PROD_IMG_DIR_.$image->getExistingImgPath().'.jpg';
 
-        $str_shop = '-'.(int) $this->context->shop->id;
-        if (Shop::getContext() != Shop::CONTEXT_SHOP || !Tools::file_exists_cache(dirname(__FILE__).'/'.$this->name.$str_shop.'.gif')) {
-            $str_shop = '';
+        $strShop = '-'.(int) $this->context->shop->id;
+        if (Shop::getContext() != Shop::CONTEXT_SHOP || !Tools::file_exists_cache(dirname(__FILE__).'/'.$this->name.$strShop.'.'.static::getWatermarkExtension($strShop))) {
+            $strShop = '';
         }
 
         //first make a watermark image
-        $return = $this->watermarkByImage(_PS_PROD_IMG_DIR_.$image->getExistingImgPath().'.jpg', dirname(__FILE__).'/'.$this->name.$str_shop.'.gif', $file, 23, 0, 0, 'right');
+        $return = $this->watermarkByImage(
+            _PS_PROD_IMG_DIR_.$image->getExistingImgPath().'.jpg',
+            __DIR__.'/'.$this->name.$strShop.'.'.static::getWatermarkExtension($strShop),
+            $file,
+            23,
+            0,
+            0,
+            'right'
+        );
 
         if (!Configuration::get('WATERMARK_HASH')) {
             Configuration::updateValue('WATERMARK_HASH', Tools::passwdGen(10));
@@ -404,14 +412,23 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
     {
         $Xoffset = $Yoffset = $xpos = $ypos = 0;
 
+        // Force image type by extension
+        $watermarkExtension = Tools::strtolower(pathinfo($watermarkpath, PATHINFO_EXTENSION));
+        if ($watermarkExtension === 'jpeg') {
+            $watermarkExtension = 'jpg';
+        }
+
         list(, , $type) = getimagesize($imagepath);
         $image = ImageManager::create($type, $imagepath);
+        $imagew = ImageManager::create(static::convertExtensionToImageType($watermarkExtension), $watermarkpath);
+        if (!$imagew) {
+            $this->context->controller->errors[] = $this->trans('The watermark image could not be loaded, please CONVERT the image.', [], 'Modules.Watermark.Admin');
+            return false;
+        }
         if (!$image) {
             return false;
         }
-        if (!$imagew = imagecreatefromgif($watermarkpath)) {
-            die($this->trans('The watermark image is not a real GIF, please CONVERT the image.', [], 'Modules.Watermark.Admin'));
-        }
+
         list($watermarkWidth, $watermarkHeight) = getimagesize($watermarkpath);
         list($imageWidth, $imageHeight) = getimagesize($imagepath);
         if ($this->xAlign == 'middle') {
@@ -436,18 +453,6 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
             return false;
         }
 
-        switch ($type) {
-            case IMAGETYPE_PNG:
-                $type = 'png';
-                break;
-            case IMAGETYPE_GIF:
-                $type = 'gif';
-                break;
-            case IMAGETYPE_JPEG:
-                $type = 'jpg';
-                break;
-        }
-
         imagealphablending($image, false);
         imagesavealpha($image, true);
 
@@ -468,10 +473,11 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
         }
 
         if (Shop::getContext() == Shop::CONTEXT_SHOP) {
-            $str_shop = '-'.(int) $this->context->shop->id;
+            $strShop = '-'.(int) $this->context->shop->id;
         } else {
-            $str_shop = '';
+            $strShop = '';
         }
+        $imageExt = static::getWatermarkExtension($strShop);
 
         $fields_form = [
             'form' => [
@@ -485,8 +491,8 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
                         'type'  => 'file',
                         'label' => $this->trans('Watermark file:', [], 'Modules.Watermark.Admin'),
                         'name'  => 'PS_WATERMARK',
-                        'desc'  => $this->trans('Must be in GIF format', [], 'Modules.Watermark.Admin'),
-                        'thumb' => '../modules/'.$this->name.'/'.$this->name.$str_shop.'.gif?t='.rand(0, time()),
+                        'desc'  => $this->trans('Must be in JPEG, PNG or GIF format', [], 'Modules.Watermark.Admin'),
+                        'thumb' => "{$this->_path}{$this->name}{$strShop}.{$imageExt}?t=".rand(0, time()),
                     ],
                     [
                         'type'  => 'text',
@@ -645,5 +651,58 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
         }
 
         return $config_fields;
+    }
+
+    /**
+     * Get the watermark icon extension, by testing its existence
+     *
+     * @param string $strShop Shop part of the filename
+     *
+     * @since 1.2.0
+     * @return string
+     */
+    public static function getWatermarkExtension($strShop)
+    {
+        // No need to probe the filesystem every single time
+        static $cache = [];
+        if (array_key_exists($strShop, $cache)) {
+            return $cache[$strShop];
+        }
+
+        // Probe image file
+        $imageExt = 'gif';
+        if (file_exists(__DIR__."/watermark{$strShop}.png")) {
+            $imageExt = 'png';
+        } elseif (file_exists(__DIR__."/watermark{$strShop}.jpg")) {
+            $imageExt = 'jpg';
+        }
+        $cache[$strShop] = $imageExt;
+
+        return $imageExt;
+    }
+
+    /**
+     * Convert file extension to image type
+     *
+     * @param string $extension
+     *
+     * @return int
+     *
+     * @since 1.2.0
+     */
+    public static function convertExtensionToImageType($extension)
+    {
+        $imageTypes = [
+            'jpg'  => IMAGETYPE_JPEG,
+            'jpeg' => IMAGETYPE_JPEG,
+            'gif'  => IMAGETYPE_GIF,
+            'png'  => IMAGETYPE_PNG,
+        ];
+
+        if (!array_key_exists(Tools::strtolower($extension), $imageTypes)) {
+            return IMAGETYPE_GIF;
+        }
+
+        return $imageTypes[Tools::strtolower($extension)];
     }
 }
