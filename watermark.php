@@ -28,15 +28,24 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+/**
+ * Class Watermark
+ */
 class Watermark extends Module
 {
-    private $_html = '';
+    /** @var array $_postErrors */
     private $_postErrors = [];
+    /** @var array $xaligns */
     private $xaligns = ['left', 'middle', 'right'];
+    /** @var array $yaligns */
     private $yaligns = ['top', 'middle', 'bottom'];
+    /** @var string $yAlign */
     private $yAlign;
+    /** @var string $xAlign */
     private $xAlign;
+    /** @var int $transparency */
     private $transparency;
+    /** @var array $imageTypes */
     private $imageTypes = [];
 
     /**
@@ -212,17 +221,17 @@ class Watermark extends Module
             if ($error = ImageManager::validateUpload($_FILES['PS_WATERMARK'])) {
                 $this->_errors[] = $error;
             } /* Copy new watermark */
-            elseif (!copy($_FILES['PS_WATERMARK']['tmp_name'], dirname(__FILE__).'/'.$this->name.$str_shop.'.gif')) {
+            elseif (!@copy($_FILES['PS_WATERMARK']['tmp_name'], dirname(__FILE__).'/'.$this->name.$str_shop.'.gif')) {
                 $this->_errors[] = sprintf($this->trans('An error occurred while uploading watermark: %1$s to %2$s', [], 'Modules.Watermark.Admin'),
                     $_FILES['PS_WATERMARK']['tmp_name'],
                     dirname(__FILE__).'/'.$this->name.$str_shop.'.gif'
-                );
+                ).' ['.error_get_last()['message'].']';
             }
         }
 
         if ($this->_errors) {
             foreach ($this->_errors as $error) {
-                $this->_html .= $this->displayError($this->trans($error, [], 'Modules.Watermark.Admin'));
+                $this->context->controller->errors[] = $this->trans($error, [], 'Modules.Watermark.Admin');
             }
         } else {
             Tools::redirectAdmin('index.php?tab=AdminModules&configure='.$this->name.'&conf=6&token='.Tools::getAdminTokenLite('AdminModules'));
@@ -268,7 +277,9 @@ class Watermark extends Module
     }
 
     /**
-     * @return void
+     * Write the watermark section to the .htaccess file
+     *
+     * @return boolean
      */
     public function writeHtaccessSection()
     {
@@ -283,7 +294,14 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
 # end ~ module watermark section\n";
 
         $path = _PS_ROOT_DIR_.'/.htaccess';
-        file_put_contents($path, $source, FILE_APPEND);
+        try {
+            file_put_contents($path, $source, FILE_APPEND);
+        } catch (Exception $e) {
+            $this->context->controller->errors[] = $this->trans('Unable to add watermark section to the .htaccess file', [], 'Modules.Watermark.Admin');
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -295,26 +313,25 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
      */
     public function getContent()
     {
-        //Modify htaccess to prevent downlaod of original pictures
+        // Modify htaccess to prevent download of original pictures
         $this->removeHtaccessSection();
         $this->writeHtaccessSection();
 
-        $this->_html = '';
-
+        $html = '';
         if (Tools::isSubmit('btnSubmit')) {
             $this->_postValidation();
             if (!count($this->_postErrors)) {
                 $this->_postProcess();
             } else {
                 foreach ($this->_postErrors as $err) {
-                    $this->_html .= $this->displayError($err);
+                    $html .= $this->displayError($err);
                 }
             }
         }
 
-        $this->_html .= $this->renderForm();
+        $html .= $this->renderForm();
 
-        return $this->_html;
+        return $html;
     }
 
     /**
@@ -342,7 +359,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
         $image = new Image($params['id_image']);
         $image->id_product = $params['id_product'];
         $file = _PS_PROD_IMG_DIR_.$image->getExistingImgPath().'-watermark.jpg';
-        $file_org = _PS_PROD_IMG_DIR_.$image->getExistingImgPath().'.jpg';
+        $fileOrg = _PS_PROD_IMG_DIR_.$image->getExistingImgPath().'.jpg';
 
         $str_shop = '-'.(int) $this->context->shop->id;
         if (Shop::getContext() != Shop::CONTEXT_SHOP || !Tools::file_exists_cache(dirname(__FILE__).'/'.$this->name.$str_shop.'.gif')) {
@@ -367,8 +384,8 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
                 $return = false;
             }
 
-            $new_file_org = _PS_PROD_IMG_DIR_.$image->getExistingImgPath().'-'.stripslashes($imageType['name']).'-'.Configuration::get('WATERMARK_HASH').'.jpg';
-            if (!ImageManager::resize($file_org, $new_file_org, (int) $imageType['width'], (int) $imageType['height'])) {
+            $newFileOrg = _PS_PROD_IMG_DIR_.$image->getExistingImgPath().'-'.stripslashes($imageType['name']).'-'.Configuration::get('WATERMARK_HASH').'.jpg';
+            if (!ImageManager::resize($fileOrg, $newFileOrg, (int) $imageType['width'], (int) $imageType['height'])) {
                 $return = false;
             }
         }
@@ -387,7 +404,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
     {
         $Xoffset = $Yoffset = $xpos = $ypos = 0;
 
-        list($tmp_width, $tmp_height, $type) = getimagesize($imagepath);
+        list(, , $type) = getimagesize($imagepath);
         $image = ImageManager::create($type, $imagepath);
         if (!$image) {
             return false;
