@@ -255,22 +255,18 @@ class Watermark extends Module
      */
     public function removeHtaccessSection()
     {
-        try {
-            $key1 = "\n# start ~ module watermark section";
-            $key2 = "# end ~ module watermark section\n";
-            $path = _PS_ROOT_DIR_.'/.htaccess';
-            if (file_exists($path) && is_writable($path)) {
-                $s = file_get_contents($path);
-                $p1 = strpos($s, $key1);
-                $p2 = strpos($s, $key2, $p1);
-                if ($p1 === false || $p2 === false) {
-                    return false;
-                }
-                $s = substr($s, 0, $p1).substr($s, $p2 + strlen($key2));
-                file_put_contents($path, $s);
+        $key1 = "\n# start ~ module watermark section";
+        $key2 = "# end ~ module watermark section\n";
+        $path = _PS_ROOT_DIR_.'/.htaccess';
+        if (file_exists($path) && is_writable($path)) {
+            $s = file_get_contents($path);
+            $p1 = strpos($s, $key1);
+            $p2 = strpos($s, $key2, $p1);
+            if ($p1 === false || $p2 === false) {
+                return false;
             }
-        } catch (Exception $e) {
-            return false;
+            $s = substr($s, 0, $p1).substr($s, $p2 + strlen($key2));
+            file_put_contents($path, $s);
         }
 
         return true;
