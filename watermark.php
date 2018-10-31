@@ -24,6 +24,8 @@
  * International Registered Trademark & Property of PrestaShop SA
  */
 
+use Symfony\Component\DependencyInjection\ServiceLocator;
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -307,6 +309,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
      */
     public function getContent()
     {
+        $idLang = $this->context->language->id;
         // Modify htaccess to prevent download of original pictures
         $this->removeHtaccessSection();
         $this->writeHtaccessSection();
@@ -479,7 +482,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
                     'title' => $this->trans('Settings', [], 'Modules.Watermark.Admin'),
                     'icon'  => 'icon-cogs',
                 ],
-                'description' => $this->trans('Once you have set up the module, regenerate the images using the "Images" tool in Preferences. However, the watermark will be added automatically to new images.', [], 'Modules.Watermark.Admin'),
+                'description' => $this->trans('Once you have set up the module, regenerate the images on the page %menu_location%. However, the watermark will be added automatically to new images.', ['%menu_location%' => static::getMenuLocation('AdminImages')], 'Modules.Watermark.Admin'),
                 'input'       => [
                     [
                         'type'  => 'file',
@@ -698,5 +701,61 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
         }
 
         return $imageTypes[Tools::strtolower($extension)];
+    }
+
+    public static function getMenuLocation($class, $idLang = null)
+    {
+        if (!$idLang) {
+            $idLang = Context::getContext()->language->id;
+        }
+
+        return implode(' > ', array_reverse(array_unique(array_map(function ($tab) use ($idLang) {
+            return $tab->name[$idLang];
+        }, static::getTabTreeByClass($class)))));
+    }
+
+    /**
+     * Get the entire tab tree by tab class name
+     *
+     * @param string $class
+     *
+     * @return Tab[]|null
+     */
+    public static function getTabTreeByClass($class)
+    {
+        $tabs = [];
+        $depth = 10;
+        $tab = Tab::getInstanceFromClassName($class);
+        while (Validate::isLoadedObject($tab) && $depth > 0) {
+            $depth--;
+            $tabs[] = $tab;
+            $tab = new Tab($tab->id_parent);
+        }
+
+        return $tabs;
+    }
+
+    /**
+     * Get tab name by tab class
+     *
+     * @param string   $class
+     * @param int|null $idLang
+     *
+     * @return string
+     * @since 1.2.0
+     *
+     */
+    public static function getTabNameByClass($class, $idLang = null)
+    {
+        $tab = Tab::getInstanceFromClassName($class);
+        if (!$tab instanceof Tab) {
+            throw new InvalidArgumentException('Tab not found');
+        }
+
+        if (!$idLang) {
+            $idLang = Context::getContext()->language->id;
+        }
+
+        return $tab->name[$idLang];
     }
 }
