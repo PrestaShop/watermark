@@ -152,10 +152,10 @@ class Watermark extends Module
         $transparency = (int) (Tools::getValue('transparency'));
 
         $types = ImageType::getImagesTypes('products');
-        $id_image_type = [];
+        $idImageType = [];
         foreach ($types as $type) {
             if (!is_null(Tools::getValue('WATERMARK_TYPES_'.(int) $type['id_image_type']))) {
-                $id_image_type['WATERMARK_TYPES_'.(int) $type['id_image_type']] = true;
+                $idImageType['WATERMARK_TYPES_'.(int) $type['id_image_type']] = true;
             }
         }
 
@@ -176,7 +176,7 @@ class Watermark extends Module
         } elseif (!in_array($xalign, $this->xaligns)) {
             $this->_postErrors[] = $this->trans('X-Align is not in allowed range.', [], 'Modules.Watermark.Admin');
         }
-        if (!count($id_image_type)) {
+        if (!count($idImageType)) {
             $this->_postErrors[] = $this->trans('At least one image type is required.', [], 'Modules.Watermark.Admin');
         }
 
@@ -196,14 +196,14 @@ class Watermark extends Module
     private function _postProcess()
     {
         $types = ImageType::getImagesTypes('products');
-        $id_image_type = [];
+        $idImageType = [];
         foreach ($types as $type) {
             if (Tools::getValue('WATERMARK_TYPES_'.(int) $type['id_image_type'])) {
-                $id_image_type[] = $type['id_image_type'];
+                $idImageType[] = $type['id_image_type'];
             }
         }
 
-        Configuration::updateValue('WATERMARK_TYPES', implode(',', $id_image_type));
+        Configuration::updateValue('WATERMARK_TYPES', implode(',', $idImageType));
         Configuration::updateValue('WATERMARK_Y_ALIGN', Tools::getValue('yalign'));
         Configuration::updateValue('WATERMARK_X_ALIGN', Tools::getValue('xalign'));
         Configuration::updateValue('WATERMARK_TRANSPARENCY', Tools::getValue('transparency'));
@@ -243,11 +243,11 @@ class Watermark extends Module
      */
     public function getAdminDir()
     {
-        $admin_dir = str_replace('\\', '/', _PS_ADMIN_DIR_);
-        $admin_dir = explode('/', $admin_dir);
-        $len = count($admin_dir);
+        $adminDir = str_replace('\\', '/', _PS_ADMIN_DIR_);
+        $adminDir = explode('/', $adminDir);
+        $len = count($adminDir);
 
-        return $len > 1 ? $admin_dir[$len - 1] : _PS_ADMIN_DIR_;
+        return $len > 1 ? $adminDir[$len - 1] : _PS_ADMIN_DIR_;
     }
 
     /**
@@ -473,7 +473,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
         }
         $imageExt = static::getWatermarkExtension($strShop);
 
-        $fields_form = [
+        $fieldsForm = [
             'form' => [
                 'legend'      => [
                     'title' => $this->trans('Settings', [], 'Modules.Watermark.Admin'),
@@ -594,7 +594,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
             'id_language'  => $this->context->language->id,
         ];
 
-        return $helper->generateForm([$fields_form]);
+        return $helper->generateForm([$fieldsForm]);
     }
 
     /**
@@ -603,7 +603,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
      */
     public function getConfigFieldsValues()
     {
-        $config_fields = [
+        $configFields = [
             'PS_WATERMARK'     => Tools::getValue('PS_WATERMARK', Configuration::get('PS_WATERMARK')),
             'transparency'     => Tools::getValue('transparency', Configuration::get('WATERMARK_TRANSPARENCY')),
             'xalign'           => Tools::getValue('xalign', Configuration::get('WATERMARK_X_ALIGN')),
@@ -612,21 +612,21 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
         ];
         //get all images type available
         $types = ImageType::getImagesTypes('products');
-        $id_image_type = [];
+        $idImageType = [];
         foreach ($types as $type) {
-            $id_image_type[] = $type['id_image_type'];
+            $idImageType[] = $type['id_image_type'];
         }
 
         //get images type from $_POST
-        $id_image_type_post = [];
-        foreach ($id_image_type as $id) {
+        $idImageTypePost = [];
+        foreach ($idImageType as $id) {
             if (Tools::getValue('WATERMARK_TYPES_'.(int) $id)) {
-                $id_image_type_post['WATERMARK_TYPES_'.(int) $id] = true;
+                $idImageTypePost['WATERMARK_TYPES_'.(int) $id] = true;
             }
         }
 
         //get images type from Configuration
-        $id_image_type_config = [];
+        $idImageTypeConfig = [];
         if ($confs = Configuration::get('WATERMARK_TYPES')) {
             $confs = explode(',', Configuration::get('WATERMARK_TYPES'));
         } else {
@@ -634,17 +634,17 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
         }
 
         foreach ($confs as $conf) {
-            $id_image_type_config['WATERMARK_TYPES_'.(int) $conf] = true;
+            $idImageTypeConfig['WATERMARK_TYPES_'.(int) $conf] = true;
         }
 
         //return only common values and value from post
         if (Tools::isSubmit('btnSubmit')) {
-            $config_fields = array_merge($config_fields, array_intersect($id_image_type_post, $id_image_type_config));
+            $configFields = array_merge($configFields, array_intersect($idImageTypePost, $idImageTypeConfig));
         } else {
-            $config_fields = array_merge($config_fields, $id_image_type_config);
+            $configFields = array_merge($configFields, $idImageTypeConfig);
         }
 
-        return $config_fields;
+        return $configFields;
     }
 
     /**
