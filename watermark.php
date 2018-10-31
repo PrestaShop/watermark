@@ -49,6 +49,8 @@ class Watermark extends Module
     protected $transparency;
     /** @var array $imageTypes */
     protected $imageTypes = [];
+    /** @var array $extensionCache */
+    protected $extensionCache = [];
 
     /**
      * Watermark constructor.
@@ -147,7 +149,7 @@ class Watermark extends Module
      *
      * @throws PrestaShopDatabaseException
      */
-    private function _postValidation()
+    protected function _postValidation()
     {
         $yalign = Tools::getValue('yalign');
         $xalign = Tools::getValue('xalign');
@@ -195,7 +197,7 @@ class Watermark extends Module
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopExceptionCore
      */
-    private function _postProcess()
+    protected function _postProcess()
     {
         $types = ImageType::getImagesTypes('products');
         $idImageType = [];
@@ -223,10 +225,10 @@ class Watermark extends Module
             if ($error = ImageManager::validateUpload($_FILES['PS_WATERMARK'])) {
                 $this->_errors[] = $error;
             } /* Copy new watermark */
-            elseif (!@copy($_FILES['PS_WATERMARK']['tmp_name'], dirname(__FILE__).'/'.$this->name.$strShop.'.'.static::getWatermarkExtension($strShop))) {
+            elseif (!@copy($_FILES['PS_WATERMARK']['tmp_name'], dirname(__FILE__).'/'.$this->name.$strShop.'.'.$this->getWatermarkExtension($strShop))) {
                 $this->_errors[] = sprintf($this->trans('An error occurred while uploading watermark: %1$s to %2$s', [], 'Modules.Watermark.Admin'),
                     $_FILES['PS_WATERMARK']['tmp_name'],
-                    dirname(__FILE__).'/'.$this->name.$strShop.'.'.static::getWatermarkExtension($strShop)
+                    dirname(__FILE__).'/'.$this->name.$strShop.'.'.$this->getWatermarkExtension($strShop)
                 ).' ['.error_get_last()['message'].']';
             }
         }
@@ -359,14 +361,14 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
         $fileOrg = _PS_PROD_IMG_DIR_.$image->getExistingImgPath().'.jpg';
 
         $strShop = '-'.(int) $this->context->shop->id;
-        if (Shop::getContext() != Shop::CONTEXT_SHOP || !Tools::file_exists_cache(dirname(__FILE__).'/'.$this->name.$strShop.'.'.static::getWatermarkExtension($strShop))) {
+        if (Shop::getContext() != Shop::CONTEXT_SHOP || !Tools::file_exists_cache(dirname(__FILE__).'/'.$this->name.$strShop.'.'.$this->getWatermarkExtension($strShop))) {
             $strShop = '';
         }
 
         //first make a watermark image
         $return = $this->watermarkByImage(
             _PS_PROD_IMG_DIR_.$image->getExistingImgPath().'.jpg',
-            __DIR__.'/'.$this->name.$strShop.'.'.static::getWatermarkExtension($strShop),
+            __DIR__.'/'.$this->name.$strShop.'.'.$this->getWatermarkExtension($strShop),
             $file,
             23,
             0,
@@ -405,7 +407,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
      *
      * @return bool
      */
-    private function watermarkByImage($imagepath, $watermarkpath, $outputpath)
+    protected function watermarkByImage($imagepath, $watermarkpath, $outputpath)
     {
         $Xoffset = $Yoffset = $xpos = $ypos = 0;
 
@@ -474,7 +476,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
         } else {
             $strShop = '';
         }
-        $imageExt = static::getWatermarkExtension($strShop);
+        $imageExt = $this->getWatermarkExtension($strShop);
 
         $fieldsForm = [
             'form' => [
@@ -658,12 +660,11 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
      * @since 1.2.0
      * @return string
      */
-    public static function getWatermarkExtension($strShop)
+    public function getWatermarkExtension($strShop)
     {
         // No need to probe the filesystem every single time
-        static $cache = [];
-        if (array_key_exists($strShop, $cache)) {
-            return $cache[$strShop];
+        if (array_key_exists($strShop, $this->extensionCache)) {
+            return $this->extensionCache[$strShop];
         }
 
         // Probe image file
@@ -673,7 +674,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
         } elseif (file_exists(__DIR__."/watermark{$strShop}.jpg")) {
             $imageExt = 'jpg';
         }
-        $cache[$strShop] = $imageExt;
+        $this->extensionCache[$strShop] = $imageExt;
 
         return $imageExt;
     }
