@@ -231,7 +231,7 @@ class Watermark extends Module
 
         if ($this->_errors) {
             foreach ($this->_errors as $error) {
-                $this->context->controller->errors[] = $this->trans($error, [], 'Modules.Watermark.Admin');
+                $this->context->controller->errors[] = $error;
             }
         } else {
             Tools::redirectAdmin('index.php?tab=AdminModules&configure='.$this->name.'&conf=6&token='.Tools::getAdminTokenLite('AdminModules'));
@@ -416,7 +416,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
         $image = ImageManager::create($type, $imagepath);
         $imagew = ImageManager::create(static::convertExtensionToImageType($watermarkExtension), $watermarkpath);
         if (!$imagew) {
-            $this->context->controller->errors[] = $this->trans('The watermark image could not be loaded, please CONVERT the image.', [], 'Modules.Watermark.Admin');
+            $this->context->controller->errors[] = $this->trans('What about Watermark image cannot be loaded, please convert it.', [], 'Modules.Watermark.Admin');
             return false;
         }
         if (!$image) {
@@ -561,18 +561,18 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
                             [
                                 'id'    => 'active_on',
                                 'value' => 1,
-                                'label' => $this->trans('Enabled', [], 'Modules.Watermark.Admin'),
+                                'label' => $this->trans('Enabled', [], 'Admin.Global'),
                             ],
                             [
                                 'id'    => 'active_off',
                                 'value' => 0,
-                                'label' => $this->trans('Disabled', [], 'Modules.Watermark.Admin'),
+                                'label' => $this->trans('Disabled', [], 'Admin.Global'),
                             ],
                         ],
                     ],
                 ],
                 'submit'      => [
-                    'title' => $this->trans('Save', [], 'Modules.Watermark.Admin'),
+                    'title' => $this->trans('Save', [], 'Admin.Actions'),
                     'class' => 'btn btn-default pull-right',
                 ],
             ],
