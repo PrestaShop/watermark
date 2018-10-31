@@ -279,20 +279,18 @@ class Watermark extends Module
      */
     public function writeHtaccessSection()
     {
-        $admin_dir = $this->getAdminDir();
+        $adminDir = $this->getAdminDir();
         $source = "\n# start ~ module watermark section
 <IfModule mod_rewrite.c>
 Options +FollowSymLinks
 RewriteEngine On
-RewriteCond expr \"! %{HTTP_REFERER} -strmatch '*://%{HTTP_HOST}*/$admin_dir/*'\"
+RewriteCond expr \"! %{HTTP_REFERER} -strmatch '*://%{HTTP_HOST}*/$adminDir/*'\"
 RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
 </IfModule>
 # end ~ module watermark section\n";
 
         $path = _PS_ROOT_DIR_.'/.htaccess';
-        try {
-            file_put_contents($path, $source, FILE_APPEND);
-        } catch (Exception $e) {
+        if (false === file_put_contents($path, $source, FILE_APPEND)) {
             $this->context->controller->errors[] = $this->trans('Unable to add watermark section to the .htaccess file', [], 'Modules.Watermark.Admin');
             return false;
         }
