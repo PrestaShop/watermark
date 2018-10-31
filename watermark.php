@@ -34,19 +34,19 @@ if (!defined('_PS_VERSION_')) {
 class Watermark extends Module
 {
     /** @var array $_postErrors */
-    private $_postErrors = [];
+    protected $_postErrors = [];
     /** @var array $xaligns */
-    private $xaligns = ['left', 'middle', 'right'];
+    protected $xaligns = ['left', 'middle', 'right'];
     /** @var array $yaligns */
-    private $yaligns = ['top', 'middle', 'bottom'];
+    protected $yaligns = ['top', 'middle', 'bottom'];
     /** @var string $yAlign */
-    private $yAlign;
+    protected $yAlign;
     /** @var string $xAlign */
-    private $xAlign;
+    protected $xAlign;
     /** @var int $transparency */
-    private $transparency;
+    protected $transparency;
     /** @var array $imageTypes */
-    private $imageTypes = [];
+    protected $imageTypes = [];
 
     /**
      * Watermark constructor.
