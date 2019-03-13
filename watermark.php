@@ -102,7 +102,7 @@ class Watermark extends Module
         }
 
         if (!isset($this->transparency) || !isset($this->xAlign) || !isset($this->yAlign)) {
-            $this->warning = $this->trans('Watermark image must be uploaded for this module to work correctly.');
+            $this->warning = $this->trans('Watermark image must be uploaded for this module to work correctly.', [], 'Modules.Watermark.Admin');
         }
     }
 
@@ -164,7 +164,7 @@ class Watermark extends Module
         }
 
         if (empty($transparency)) {
-            $this->_postErrors[] = $this->trans('Opacity required.');
+            $this->_postErrors[] = $this->trans('Opacity required.', [], 'Modules.Watermark.Admin');
         } elseif ($transparency < 1 || $transparency > 100) {
             $this->_postErrors[] = $this->trans('Opacity is not in allowed range.', [], 'Modules.Watermark.Admin');
         }
@@ -664,10 +664,11 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
         }
         // Probe image file
         $imageExt = 'gif';
-        if (file_exists(dirname(__FILE__) . "/views/img/watermark{$strShop}.png")) {
-            $imageExt = 'png';
-        } elseif (file_exists(dirname(__FILE__) . "/views/img/watermark{$strShop}.jpg")) {
-            $imageExt = 'jpg';
+        foreach (['png', 'jpg'] as $extension) {
+            if (file_exists(sprintf('%s/views/img/watermark/%s.%s', dirname(__FILE__) , $strShop, $extension))) {
+                $imageExt = $extension;
+                break;
+            }
         }
         $this->extensionCache[$strShop] = $imageExt;
 
