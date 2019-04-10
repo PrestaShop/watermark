@@ -72,7 +72,7 @@ class Watermark extends Module
         $this->description = $this->trans('Protect images by watermark.', [], 'Modules.Watermark.Admin');
         $this->confirmUninstall = $this->trans('Are you sure you want to delete your details?', [], 'Modules.Watermark.Admin');
         $this->ps_versions_compliancy = ['min' => '1.7.4.0', 'max' => _PS_VERSION_];
-        
+
         $config = Configuration::getMultiple(
             [
                 'WATERMARK_TYPES',
@@ -487,7 +487,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
                         'label' => $this->trans('Watermark file:', [], 'Modules.Watermark.Admin'),
                         'name' => 'PS_WATERMARK',
                         'desc' => $this->trans('Must be in JPEG, PNG or GIF format', [], 'Modules.Watermark.Admin'),
-                        'thumb' => "{$this->_path}.'views/img/'.{$this->name}{$strShop}.{$imageExt}?t=" . rand(0, time()),
+                        'thumb' => "{$this->_path}views/img/{$this->name}{$strShop}.{$imageExt}?t=" . rand(0, time()),
                     ],
                     [
                         'type' => 'text',
@@ -665,7 +665,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
         // Probe image file
         $imageExt = 'gif';
         foreach (['png', 'jpg'] as $extension) {
-            if (file_exists(sprintf('%s/views/img/watermark/%s.%s', dirname(__FILE__) , $strShop, $extension))) {
+            if (file_exists(sprintf('%s/views/img/watermark%s.%s', dirname(__FILE__) , $strShop, $extension))) {
                 $imageExt = $extension;
                 break;
             }
