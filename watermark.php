@@ -230,6 +230,7 @@ class Watermark extends Module
                 if ($imageExt === '.jpeg') {
                     $imageExt = '.jpg';
                 }
+                $this->deleteOldWatermark($strShop);
                 /* Copy new watermark */
                 if (!copy($_FILES['PS_WATERMARK']['tmp_name'], dirname(__FILE__) . '/views/img/' . $this->name . $strShop . $imageExt)) {
                     $this->_errors[] = sprintf(
@@ -646,6 +647,18 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
         }
 
         return $configFields;
+    }
+
+    /**
+     * Delete old watermark images
+     *
+     * @param $strShop
+     */
+    private function deleteOldWatermark($strShop)
+    {
+        foreach (['.jpg', '.gif', '.png'] as $extension) {
+            @unlink(dirname(__FILE__) . '/views/img/' . $this->name . $strShop . $extension);
+        }
     }
 
     /**
