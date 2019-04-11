@@ -108,12 +108,14 @@ class Watermark extends Module
 
     /**
      * @return bool
-     *
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
      */
     public function install()
     {
+        if (! extension_loaded('gd')) {
+            $this->_errors[] = $this->l('You have to enable the GD extension on your server to install this module');
+            return false;
+        }
+
         $this->writeHtaccessSection();
         if (!parent::install() || !$this->registerHook('actionWatermark')) {
             return false;
@@ -362,11 +364,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
         $return = $this->watermarkByImage(
             _PS_PROD_IMG_DIR_ . $image->getExistingImgPath() . '.jpg',
             dirname(__FILE__) . '/views/img/' . $this->name . $strShop . '.' . $this->getWatermarkExtension($strShop),
-            $file,
-            23,
-            0,
-            0,
-            'right'
+            $file
         );
 
         if (!Configuration::get('WATERMARK_HASH')) {
@@ -404,8 +402,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
     {
         $Xoffset = $Yoffset = $xpos = $ypos = 0;
 
-        $watermarkExtension = #this->forceImageExtension(
-            // Force image type by extension
+        // Force image type by extension
         $watermarkExtension = Tools::strtolower(pathinfo($watermarkpath, PATHINFO_EXTENSION));
         if ($watermarkExtension === 'jpeg') {
             $watermarkExtension = 'jpg';
@@ -426,25 +423,25 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
 
         list($watermarkWidth, $watermarkHeight) = getimagesize($watermarkpath);
         list($imageWidth, $imageHeight) = getimagesize($imagepath);
-        if ($this->xAlign == 'middle') {
+        if ($this->xAlign === 'middle') {
             $xpos = $imageWidth / 2 - $watermarkWidth / 2 + $Xoffset;
         }
-        if ($this->xAlign == 'left') {
+        if ($this->xAlign === 'left') {
             $xpos = 0 + $Xoffset;
         }
-        if ($this->xAlign == 'right') {
+        if ($this->xAlign === 'right') {
             $xpos = $imageWidth - $watermarkWidth - $Xoffset;
         }
-        if ($this->yAlign == 'middle') {
+        if ($this->yAlign === 'middle') {
             $ypos = $imageHeight / 2 - $watermarkHeight / 2 + $Yoffset;
         }
-        if ($this->yAlign == 'top') {
+        if ($this->yAlign === 'top') {
             $ypos = 0 + $Yoffset;
         }
-        if ($this->yAlign == 'bottom') {
+        if ($this->yAlign === 'bottom') {
             $ypos = $imageHeight - $watermarkHeight - $Yoffset;
         }
-        if (!imagecopymerge($image, $imagew, $xpos, $ypos, 0, 0, $watermarkWidth, $watermarkHeight, $this->transparency)) {
+        if (! $this->imagecopymerge_alpha($image, $imagew, $xpos, $ypos, 0, 0, $watermarkWidth, $watermarkHeight, $this->transparency, $watermarkExtension)) {
             return false;
         }
 
@@ -686,6 +683,34 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
         $this->extensionCache[$strShop] = $imageExt;
 
         return $imageExt;
+    }
+
+    /**
+     * Merges images and watermarks.
+     *
+     * @param $dst_im
+     * @param $src_im
+     * @param $dst_x
+     * @param $dst_y
+     * @param $src_x
+     * @param $src_y
+     * @param $src_w
+     * @param $src_h
+     * @param $pct
+     * @param $watermarkExtension
+     * @return bool
+     */
+    private function imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $pct, $watermarkExtension)
+    {
+        if ($watermarkExtension === 'png') { // Needed for PNG-24 with transparency
+            $cut = imagecreatetruecolor($src_w, $src_h);
+            imagecopy($cut, $dst_im, 0, 0, $dst_x, $dst_y, $src_w, $src_h);
+            imagecopy($cut, $src_im, 0, 0, $src_x, $src_y, $src_w, $src_h);
+        } else {
+            $cut = $src_im;
+        }
+
+        return imagecopymerge($dst_im, $cut, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $pct);
     }
 
     /**
