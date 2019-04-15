@@ -475,7 +475,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
         $fieldsForm = [
             'form' => [
                 'legend' => [
-                    'title' => $this->trans('Settings', [], 'Modules.Watermark.Admin'),
+                    'title' => $this->trans('Settings', [], 'Admin.Global'),
                     'icon' => 'icon-cogs'
                 ],
                 'description' => $this->trans('Once you have set up the module, regenerate the images using the "Images" tool in Preferences. However, the watermark will be added automatically to new images.', [], 'Modules.Watermark.Admin'),
@@ -484,7 +484,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
                         'type' => 'file',
                         'label' => $this->trans('Watermark file:', [], 'Modules.Watermark.Admin'),
                         'name' => 'PS_WATERMARK',
-                        'desc' => $this->trans('Must be in JPEG, PNG or GIF format', [], 'Modules.Watermark.Admin'),
+                        'desc' => $this->trans('Image format not recognized, allowed formats are: .gif, .jpg, .png', [], 'Admin.Notifications.Error'),
                         'thumb' => "{$this->_path}views/img/{$this->name}{$strShop}.{$imageExt}?t=" . rand(0, time()),
                     ],
                     [
@@ -560,18 +560,18 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
                             [
                                 'id' => 'active_on',
                                 'value' => 1,
-                                'label' => $this->trans('Enabled', [], 'Modules.Watermark.Admin'),
+                                'label' => $this->trans('Enabled', [], 'Admin.Global'),
                             ],
                             [
                                 'id' => 'active_off',
                                 'value' => 0,
-                                'label' => $this->trans('Disabled', [], 'Modules.Watermark.Admin'),
+                                'label' => $this->trans('Disabled', [], 'Admin.Global'),
                             ],
                         ],
                     ],
                 ],
                 'submit' => [
-                    'title' => $this->trans('Save', [], 'Modules.Watermark.Admin'),
+                    'title' => $this->trans('Save', [], 'Admin.Actions'),
                     'class' => 'btn btn-default pull-right'
                 ]
             ],
