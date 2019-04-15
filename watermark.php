@@ -188,7 +188,7 @@ class Watermark extends Module
 
         if (isset($_FILES['PS_WATERMARK']['tmp_name']) && !empty($_FILES['PS_WATERMARK']['tmp_name'])) {
             if (!ImageManager::isRealImage($_FILES['PS_WATERMARK']['tmp_name'], $_FILES['PS_WATERMARK']['type'], ['image/gif', 'image/jpeg', 'image/jpg', 'image/png'])) {
-                $this->_postErrors[] = $this->trans('Image must be in JPEG, PNG or GIF format.', [], 'Modules.Watermark.Admin');
+                $this->_postErrors[] = $this->trans('Image format not recognized, allowed formats are: .gif, .jpg, .png', [], 'Admin.Notifications.Error');
             }
         }
 
