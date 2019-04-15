@@ -102,7 +102,7 @@ class Watermark extends Module
         }
 
         if (!isset($this->transparency) || !isset($this->xAlign) || !isset($this->yAlign)) {
-            $this->warning = $this->trans('Watermark image must be uploaded for this module to work correctly.', [], 'Modules.Watermark.Admin');
+            $this->warning = $this->trans('Watermark image must be uploaded for this module to work properly.', [], 'Modules.Watermark.Admin');
         }
     }
 
