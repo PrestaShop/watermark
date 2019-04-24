@@ -478,7 +478,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
                     'title' => $this->trans('Settings', [], 'Admin.Global'),
                     'icon' => 'icon-cogs'
                 ],
-                'description' => $this->trans('Once you have set up the module, regenerate the images using the "Images" tool in Preferences. However, the watermark will be added automatically to new images.', [], 'Modules.Watermark.Admin'),
+                'description' => $this->trans('Once the module set up, regenerate your images with the dedicated tool in the Preferences section. Watermark will automatically be applied to new images.', [], 'Modules.Watermark.Admin'),
                 'input' => [
                     [
                         'type' => 'file',
