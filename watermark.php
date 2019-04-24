@@ -554,7 +554,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
                     [
                         'type' => "switch",
                         'name' => 'WATERMARK_LOGGED',
-                        'label' => $this->trans('Logged in customers see images without watermark', [], 'Modules.Watermark.Admin'),
+                        'label' => $this->trans('Logged in customers can see images without watermark', [], 'Modules.Watermark.Admin'),
                         'is_bool' => true,
                         'values' => [
                             [
