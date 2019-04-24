@@ -505,8 +505,8 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
                                     'name' => $this->trans('Left', [], 'Admin.Global')
                                 ],
                                 [
-                                    'id' => 'Middle',
-                                    'name' => $this->trans('middle', [], 'Admin.Global')
+                                    'id' => 'middle',
+                                    'name' => $this->trans('Middle', [], 'Admin.Global')
                                 ],
                                 [
                                     'id' => 'right',
