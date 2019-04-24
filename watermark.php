@@ -502,15 +502,15 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
                             'query' => [
                                 [
                                     'id' => 'left',
-                                    'name' => $this->trans('left', [], 'Modules.Watermark.Admin')
+                                    'name' => $this->trans('Left', [], 'Admin.Global')
                                 ],
                                 [
-                                    'id' => 'middle',
-                                    'name' => $this->trans('middle', [], 'Modules.Watermark.Admin')
+                                    'id' => 'Middle',
+                                    'name' => $this->trans('middle', [], 'Admin.Global')
                                 ],
                                 [
                                     'id' => 'right',
-                                    'name' => $this->trans('right', [], 'Modules.Watermark.Admin')
+                                    'name' => $this->trans('Right', [], 'Admin.Global')
                                 ]
                             ],
                             'id' => 'id',
@@ -526,15 +526,15 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
                             'query' => [
                                 [
                                     'id' => 'top',
-                                    'name' => $this->trans('top', [], 'Modules.Watermark.Admin')
+                                    'name' => $this->trans('Top', [], 'Admin.Global')
                                 ],
                                 [
                                     'id' => 'middle',
-                                    'name' => $this->trans('middle', [], 'Modules.Watermark.Admin')
+                                    'name' => $this->trans('Middle', [], 'Admin.Global')
                                 ],
                                 [
                                     'id' => 'bottom',
-                                    'name' => $this->trans('bottom', [], 'Modules.Watermark.Admin')
+                                    'name' => $this->trans('Bottom', [], 'Admin.Global')
                                 ]
                             ],
                             'id' => 'id',
