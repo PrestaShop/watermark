@@ -417,7 +417,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
 
         $imagew = ImageManager::create(static::convertExtensionToImageType($watermarkExtension), $watermarkpath);
         if (! $imagew) {
-            $this->context->controller->errors[] = $this->trans('Watermark image cannot be loaded, please convert it.', [], 'Modules.Watermark.Admin');
+            $this->context->controller->errors[] = $this->trans('Watermark image format is unsupported, allowed file type are: .gif, .jpg, .png.', [], 'Modules.Watermark.Admin');
             return false;
         }
 
