@@ -155,13 +155,13 @@ class Watermark extends Module
     {
         $yalign = Tools::getValue('yalign');
         $xalign = Tools::getValue('xalign');
-        $transparency = (int)(Tools::getValue('transparency'));
+        $transparency = (int) Tools::getValue('transparency');
 
         $types = ImageType::getImagesTypes('products');
         $idImageType = [];
         foreach ($types as $type) {
-            if (! is_null(Tools::getValue('WATERMARK_TYPES_' . (int)$type['id_image_type']))) {
-                $idImageType['WATERMARK_TYPES_' . (int)$type['id_image_type']] = true;
+            if (! is_null(Tools::getValue('WATERMARK_TYPES_' . (int) $type['id_image_type']))) {
+                $idImageType['WATERMARK_TYPES_' . (int) $type['id_image_type']] = true;
             }
         }
 
@@ -186,13 +186,13 @@ class Watermark extends Module
             $this->_postErrors[] = $this->trans('At least one image type is required.', [], 'Modules.Watermark.Admin');
         }
 
-        if (isset($_FILES['PS_WATERMARK']['tmp_name']) && !empty($_FILES['PS_WATERMARK']['tmp_name'])) {
+        if (isset($_FILES['PS_WATERMARK']['tmp_name']) && ! empty($_FILES['PS_WATERMARK']['tmp_name'])) {
             if (! ImageManager::isRealImage($_FILES['PS_WATERMARK']['tmp_name'], $_FILES['PS_WATERMARK']['type'], ['image/gif', 'image/jpeg', 'image/jpg', 'image/png'])) {
                 $this->_postErrors[] = $this->trans('Allowed image formats are: .gif, .jpg, .png', [], 'Admin.Global');
             }
         }
 
-        return !count($this->_postErrors) ? true : false;
+        return ! count($this->_postErrors) ? true : false;
     }
 
     /**
@@ -204,7 +204,7 @@ class Watermark extends Module
         $types = ImageType::getImagesTypes('products');
         $idImageType = [];
         foreach ($types as $type) {
-            if (Tools::getValue('WATERMARK_TYPES_' . (int)$type['id_image_type'])) {
+            if (Tools::getValue('WATERMARK_TYPES_' . (int) $type['id_image_type'])) {
                 $idImageType[] = $type['id_image_type'];
             }
         }
@@ -216,7 +216,7 @@ class Watermark extends Module
         Configuration::updateValue('WATERMARK_LOGGED', Tools::getValue('WATERMARK_LOGGED'));
 
         if (Shop::getContext() == Shop::CONTEXT_SHOP) {
-            $strShop = '-' . (int)$this->context->shop->id;
+            $strShop = '-' . (int) $this->context->shop->id;
         } else {
             $strShop = '';
         }
@@ -378,12 +378,12 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
         //go through file formats defined for watermark and resize them
         foreach ($this->imageTypes as $imageType) {
             $newFile = _PS_PROD_IMG_DIR_ . $image->getExistingImgPath() . '-' . Tools::stripslashes($imageType['name']) . '.jpg';
-            if (! ImageManager::resize($file, $newFile, (int)$imageType['width'], (int)$imageType['height'])) {
+            if (! ImageManager::resize($file, $newFile, (int) $imageType['width'], (int) $imageType['height'])) {
                 $return = false;
             }
 
             $newFileOrg = _PS_PROD_IMG_DIR_ . $image->getExistingImgPath() . '-' . Tools::stripslashes($imageType['name']) . '-' . Configuration::get('WATERMARK_HASH') . '.jpg';
-            if (! ImageManager::resize($file_org, $newFileOrg, (int)$imageType['width'], (int)$imageType['height'])) {
+            if (! ImageManager::resize($file_org, $newFileOrg, (int) $imageType['width'], (int) $imageType['height'])) {
                 $return = false;
             }
         }
@@ -465,7 +465,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
         }
 
         if (Shop::getContext() == Shop::CONTEXT_SHOP) {
-            $strShop = '-' . (int)$this->context->shop->id;
+            $strShop = '-' . (int) $this->context->shop->id;
         } else {
             $strShop = '';
         }
@@ -580,7 +580,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
         $helper = new HelperForm();
         $helper->show_toolbar = false;
         $helper->table = $this->table;
-        $lang = new Language((int)Configuration::get('PS_LANG_DEFAULT'));
+        $lang = new Language((int) Configuration::get('PS_LANG_DEFAULT'));
         $helper->default_form_language = $lang->id;
         $helper->allow_employee_form_lang = Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG') ? Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG') : 0;
         $helper->identifier = $this->identifier;
@@ -619,8 +619,8 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
         //get images type from $_POST
         $idImageTypePost = [];
         foreach ($idImageType as $id) {
-            if (Tools::getValue('WATERMARK_TYPES_' . (int)$id)) {
-                $idImageTypePost['WATERMARK_TYPES_' . (int)$id] = true;
+            if (Tools::getValue('WATERMARK_TYPES_' . (int) $id)) {
+                $idImageTypePost['WATERMARK_TYPES_' . (int) $id] = true;
             }
         }
 
@@ -633,7 +633,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
         }
 
         foreach ($confs as $conf) {
-            $idImageTypeConfig['WATERMARK_TYPES_' . (int)$conf] = true;
+            $idImageTypeConfig['WATERMARK_TYPES_' . (int) $conf] = true;
         }
 
         //return only common values and value from post
