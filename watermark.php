@@ -319,6 +319,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws PrestaShopExceptionCore
+     * @throws SmartyException
      */
     public function getContent()
     {
@@ -338,6 +339,9 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
             }
         }
         $html .= $this->renderForm();
+        $this->context->controller->addCSS(dirname(__FILE__) . '/views/css/module-addons-suggestion.css');
+        $html .= $this->renderAddonsSuggestion();
+
         return $html;
     }
 
@@ -345,8 +349,6 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
      * @param array $params
      *
      * @return bool
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
      */
     public function hookActionWatermark($params)
     {
@@ -597,6 +599,21 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
     }
 
     /**
+     * @return string
+     * @throws SmartyException
+     */
+    public function renderAddonsSuggestion()
+    {
+        $suggestionWording = $this->limitWordingChars($this->trans('For example, you can add "Free shipping", "-30%", "New", "Last parts in stock", "No. 1 of sales" badges to make your products more visible and to differentiate them. And also propose badges indicating the composition (100% cotton, 100% organic...) or icons highlighting the strengths of each product. So you customize your shop in just a few clicks.', [], 'Admin.Modules.Feature'));
+        $this->context->smarty->assign(array(
+            'addons_watermark_link' => $this->trans('https://addons.prestashop.com/en/309-labels-stickers-logos', [], 'Admin.Modules.Feature'),
+            'suggestionWording' => $suggestionWording,
+        ));
+
+        return $this->context->smarty->fetch('module:watermark/views/templates/admin/addons-suggestion.tpl');
+    }
+
+    /**
      * @return array
      * @throws PrestaShopDatabaseException
      */
@@ -734,5 +751,23 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
             return IMAGETYPE_GIF;
         }
         return $imageTypes[Tools::strtolower($extension)];
+    }
+
+    /**
+     * @param $text
+     * @return string
+     */
+    private function limitWordingChars($text) {
+        $newText = '';
+        $text = html_entity_decode($text, ENT_COMPAT, 'UTF-8');
+        if (Tools::strlen($text) > 200) {
+            $textCut = Tools::substr($text, 0, 200);
+            $endPoint = Tools::strrpos($textCut, ' ');
+            $newText = $endPoint ? Tools::substr($textCut, 0, $endPoint) : Tools::substr($textCut, 0);
+        }
+        $readMoreText = Tools::substr($text, Tools::strlen($newText));
+        $newText .= $newText !== '' ? '<div style="display:inline;" id="suggestion-wording-dots">...</div><div id="suggestion-wording-more-text">' : '';
+
+        return $newText . $readMoreText . '</div>';
     }
 }
