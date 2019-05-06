@@ -112,7 +112,7 @@ class Watermark extends Module
     public function install()
     {
         if (! extension_loaded('gd')) {
-            $this->_errors[] = $this->l('You have to enable the GD extension on your server to install this module');
+            $this->_errors[] = $this->trans('You have to enable the GD extension on your server to install this module', [], 'Modules.Watermark.Admin');
             return false;
         }
 
