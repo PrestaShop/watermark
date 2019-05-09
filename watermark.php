@@ -59,7 +59,7 @@ class Watermark extends Module
     {
         $this->name = 'watermark';
         $this->tab = 'administration';
-        $this->version = '1.2.0';
+        $this->version = '2.0.0';
         $this->author = 'PrestaShop';
 
         $this->bootstrap = true;
@@ -668,6 +668,8 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
     /**
      * Delete old watermark images
      *
+     * @since 2.0.0
+     *
      * @param $strShop
      */
     private function deleteOldWatermark($strShop)
@@ -682,7 +684,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
      *
      * @param string $strShop Shop part of the filename
      *
-     * @since 1.2.0
+     * @since 2.0.0
      *
      * @return string
      */
@@ -719,6 +721,8 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
      * @param $pct
      * @param $watermarkExtension
      *
+     * @since 2.0.0
+     *
      * @return bool
      */
     private function imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $pct, $watermarkExtension)
@@ -741,7 +745,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
      *
      * @return int
      *
-     * @since 1.2.0
+     * @since 2.0.0
      */
     public static function convertExtensionToImageType($extension)
     {
