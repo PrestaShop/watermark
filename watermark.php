@@ -247,7 +247,7 @@ class Watermark extends Module
                 $this->context->controller->errors[] = $error;
             }
         } else {
-            Tools::redirectAdmin('index.php?tab=AdminModules&configure=' . $this->name . '&conf=6&token=' . Tools::getAdminTokenLite('AdminModules'));
+            Tools::redirectAdmin($this->context->link->getAdminLink('AdminModules', true, [], ['configure' => $this->name, 'conf' => 6]));
         }
     }
 
