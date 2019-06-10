@@ -328,8 +328,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
 
         $html = '';
         if (Tools::isSubmit('btnSubmit')) {
-            $this->_postValidation();
-            if (!count($this->_postErrors)) {
+            if ($this->_postValidation()) {
                 $this->_postProcess();
             } else {
                 foreach ($this->_postErrors as $err) {
