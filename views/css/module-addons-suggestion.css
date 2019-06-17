@@ -28,13 +28,10 @@
 
 .module-addons-suggestion .suggestion-category-details {
     min-width: 130px;
-    padding-top: 10px;
 }
 
 .module-addons-suggestion .suggestion-category-details .category-label {
     font-weight: bold;
-    margin-top: 8px;
-    font-size: 1.1em;
 }
 
 .module-addons-suggestion .suggestion-category-details .marketplace-label {
@@ -42,22 +39,26 @@
     font-weight: bold;
 }
 
-.module-addons-suggestion .suggestion-wording {
-    width: 500px;
-    margin-top: 15px;
+.module-addons-suggestion .suggestion-category-description,
+.module-addons-suggestion .suggestion-category-description h2 {
+    font-weight: normal;
+    font-size: 12px;
+    font-family: Open Sans,Helvetica,Arial,sans-serif;
+    margin: 0;
 }
 
 .module-addons-suggestion .suggestion-link {
-    margin-top: 25px;
+    margin-top: 30px;
+    min-width: 180px;
+    text-align: center;
 }
 .module-addons-suggestion .suggestion-link .btn-primary {
     background-color: #25b9d7;
     border-color: #25b9d7;
     color: #fff;
     border-radius: 0;
-    text-transform: none;
-    font-size: 1.1em;
-    padding: 6px 10px;
+    min-width: 180px;
+    white-space: normal;
 }
 
 @media screen and (max-width: 768px) {
@@ -65,7 +66,7 @@
         display: block;
     }
 
-    .module-addons-suggestion .suggestion-wording {
+    .module-addons-suggestion .suggestion-category-description {
         width: auto;
         margin-top: 10px;
     }
@@ -79,5 +80,3 @@
         display: inline-block;
     }
 }
-
-#suggestion-wording-more-text {display: none;}

@@ -27,6 +27,8 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+use PrestaShop\Module\Watermark\Addons\CategoryFetcher;
+
 /**
  * Class Watermark
  */
@@ -68,7 +70,7 @@ class Watermark extends Module
         $this->displayName = $this->trans('Watermark', [], 'Modules.Watermark.Admin');
         $this->description = $this->trans('Protect images by watermark.', [], 'Modules.Watermark.Admin');
         $this->confirmUninstall = $this->trans('Are you sure you want to delete your details?', [], 'Modules.Watermark.Admin');
-        $this->ps_versions_compliancy = ['min' => '1.7.4.0', 'max' => _PS_VERSION_];
+        $this->ps_versions_compliancy = ['min' => '1.7.6.0', 'max' => _PS_VERSION_];
 
         $config = Configuration::getMultiple(
             [
@@ -98,7 +100,7 @@ class Watermark extends Module
             Configuration::updateValue('WATERMARK_HASH', Tools::passwdGen(10));
         }
 
-        if (!isset($this->transparency) || !isset($this->xAlign) || !isset($this->yAlign)) {
+        if (!isset($this->transparency, $this->xAlign, $this->yAlign)) {
             $this->warning = $this->trans('Watermark image must be uploaded for this module to work properly.', [], 'Modules.Watermark.Admin');
         }
     }
@@ -127,8 +129,6 @@ class Watermark extends Module
 
     /**
      * @return bool
-     *
-     * @throws PrestaShopDatabaseException
      */
     public function uninstall()
     {
@@ -158,7 +158,7 @@ class Watermark extends Module
         $types = ImageType::getImagesTypes('products');
         $idImageType = [];
         foreach ($types as $type) {
-            if (!is_null(Tools::getValue('WATERMARK_TYPES_' . (int) $type['id_image_type']))) {
+            if (null !== Tools::getValue('WATERMARK_TYPES_' . (int)$type['id_image_type'])) {
                 $idImageType['WATERMARK_TYPES_' . (int) $type['id_image_type']] = true;
             }
         }
@@ -213,7 +213,7 @@ class Watermark extends Module
         Configuration::updateValue('WATERMARK_TRANSPARENCY', Tools::getValue('transparency'));
         Configuration::updateValue('WATERMARK_LOGGED', Tools::getValue('WATERMARK_LOGGED'));
 
-        if (Shop::getContext() == Shop::CONTEXT_SHOP) {
+        if (Shop::getContext() === Shop::CONTEXT_SHOP) {
             $strShop = '-' . (int) $this->context->shop->id;
         } else {
             $strShop = '';
@@ -356,7 +356,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
         $file_org = _PS_PROD_IMG_DIR_ . $image->getExistingImgPath() . '.jpg';
 
         $strShop = '-' . (int) $this->context->shop->id;
-        if (Shop::getContext() != Shop::CONTEXT_SHOP || !Tools::file_exists_cache(dirname(__FILE__) . '/views/img/' . $this->name . $strShop . '.' . $this->getWatermarkExtension($strShop))) {
+        if (Shop::getContext() !== Shop::CONTEXT_SHOP || !Tools::file_exists_cache(dirname(__FILE__) . '/views/img/' . $this->name . $strShop . '.' . $this->getWatermarkExtension($strShop))) {
             $strShop = '';
         }
 
@@ -465,7 +465,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
             $types[$key]['label'] = $type['name'] . ' (' . $type['width'] . ' x ' . $type['height'] . ')';
         }
 
-        if (Shop::getContext() == Shop::CONTEXT_SHOP) {
+        if (Shop::getContext() === Shop::CONTEXT_SHOP) {
             $strShop = '-' . (int) $this->context->shop->id;
         } else {
             $strShop = '';
@@ -604,12 +604,18 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
      */
     public function renderAddonsSuggestion()
     {
-        $suggestionWording = $this->limitWordingChars($this->trans('For example, you can add "Free shipping", "-30%", "New", "Last parts in stock", "No. 1 of sales" badges to make your products more visible and to differentiate them. And also propose badges indicating the composition (100% cotton, 100% organic...) or icons highlighting the strengths of each product. So you customize your shop in just a few clicks.', [], 'Admin.Modules.Feature'));
+        $categoryFetcher = new CategoryFetcher(
+            309,
+            [
+                'name' => 'Labels/stickers/logos',
+                'link' => '/en/309-labels-stickers-logos',
+                'description' => 'Add incentivizing information to your products and your store with PrestaShop logo, label and stickers modules.',
+            ]
+        );
+        $category = $categoryFetcher->getData($this->context->language->iso_code);
         $this->context->smarty->assign(array(
-            'addons_watermark_link' => $this->trans('https://addons.prestashop.com/en/309-labels-stickers-logos', [], 'Admin.Modules.Feature'),
-            'suggestionWording' => $suggestionWording,
+            'addons_category' => $category,
         ));
-
         return $this->context->smarty->fetch('module:watermark/views/templates/admin/addons-suggestion.tpl');
     }
 
@@ -759,25 +765,5 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
         }
 
         return $imageTypes[Tools::strtolower($extension)];
-    }
-
-    /**
-     * @param $text
-     *
-     * @return string
-     */
-    private function limitWordingChars($text)
-    {
-        $newText = '';
-        $text = html_entity_decode($text, ENT_COMPAT, 'UTF-8');
-        if (Tools::strlen($text) > 200) {
-            $textCut = Tools::substr($text, 0, 200);
-            $endPoint = Tools::strrpos($textCut, ' ');
-            $newText = $endPoint ? Tools::substr($textCut, 0, $endPoint) : Tools::substr($textCut, 0);
-        }
-        $readMoreText = Tools::substr($text, Tools::strlen($newText));
-        $newText .= $newText !== '' ? '<div style="display:inline;" id="suggestion-wording-dots">...</div><div id="suggestion-wording-more-text">' : '';
-
-        return $newText . $readMoreText . '</div>';
     }
 }
