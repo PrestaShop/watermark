@@ -13,12 +13,6 @@
     "php": ">=5.6",
     "prestashop/circuit-breaker": "^3.0.0"
   },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "git@github.com:jolelievre/circuit-breaker.git"
-    }
-  ],
   "autoload": {
     "psr-4": {
       "PrestaShop\\Module\\Watermark\\": "src/"
