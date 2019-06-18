@@ -57,16 +57,22 @@ class CategoryFetcher
     const OPEN_ALLOWED_FAILURES = 1;
     const OPEN_TIMEOUT_SECONDS = 1.2;
     const OPEN_THRESHOLD_SECONDS = 60;
+
     /** @var int */
     private $categoryId;
+
     /** @var array */
     private $defaultData;
+
     /** @var FactoryInterface */
     private $factory;
+
     /** @var array */
     private $apiSettings;
+
     /** @var array */
     private $platformSettings;
+
     /**
      * @param int $categoryId
      * @param array $defaultData
@@ -112,6 +118,7 @@ class CategoryFetcher
         ;
         $this->factory = new AdvancedCircuitBreakerFactory();
     }
+    
     /**
      * @param string $isoCode Two letters iso code to identify the country (ex: en, fr, es, ...)
      *
@@ -124,6 +131,7 @@ class CategoryFetcher
         $category['description'] = $this->getDescription($category);
         return $category;
     }
+    
     /**
      * @param string $isoCode
      *
@@ -150,6 +158,7 @@ class CategoryFetcher
         }
         return null !== $category ? $category : $this->defaultData;
     }
+    
     /**
      * @param array $categories
      * @param int $searchedCategoryId
@@ -171,6 +180,7 @@ class CategoryFetcher
         }
         return null;
     }
+    
     /**
      * @param array $category
      *
@@ -200,6 +210,7 @@ class CategoryFetcher
         }
         return !empty($categoryDescription) ? $categoryDescription : $defaultDescription;
     }
+    
     /**
      * Updates link property with a correctly formatted url with tracking parameters
      *
