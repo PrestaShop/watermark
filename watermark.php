@@ -232,11 +232,11 @@ class Watermark extends Module
                 }
                 $this->deleteOldWatermark($strShop);
                 /* Copy new watermark */
-                if (!copy($_FILES['PS_WATERMARK']['tmp_name'], dirname(__FILE__) . '/views/img/' . $this->name . $strShop . $imageExt)) {
+                if (!copy($_FILES['PS_WATERMARK']['tmp_name'], __DIR__ . '/views/img/' . $this->name . $strShop . $imageExt)) {
                     $this->_errors[] = sprintf(
                         $this->trans('An error occurred while uploading watermark: %1$s to %2$s', [], 'Modules.Watermark.Admin'),
                         $_FILES['PS_WATERMARK']['tmp_name'],
-                        dirname(__FILE__) . '/views/img/' . $this->name . $strShop . $imageExt
+                        __DIR__ . '/views/img/' . $this->name . $strShop . $imageExt
                     );
                 }
             }
@@ -337,7 +337,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
             }
         }
         $html .= $this->renderForm();
-        $this->context->controller->addCSS(dirname(__FILE__) . '/views/css/module-addons-suggestion.css');
+        $this->context->controller->addCSS(__DIR__ . '/views/css/module-addons-suggestion.css');
         $html .= $this->renderAddonsSuggestion();
 
         return $html;
@@ -356,14 +356,14 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
         $file_org = _PS_PROD_IMG_DIR_ . $image->getExistingImgPath() . '.jpg';
 
         $strShop = '-' . (int) $this->context->shop->id;
-        if (Shop::getContext() !== Shop::CONTEXT_SHOP || !Tools::file_exists_cache(dirname(__FILE__) . '/views/img/' . $this->name . $strShop . '.' . $this->getWatermarkExtension($strShop))) {
+        if (Shop::getContext() !== Shop::CONTEXT_SHOP || !Tools::file_exists_cache(__DIR__ . '/views/img/' . $this->name . $strShop . '.' . $this->getWatermarkExtension($strShop))) {
             $strShop = '';
         }
 
         // First make a watermark image
         $return = $this->watermarkByImage(
             _PS_PROD_IMG_DIR_ . $image->getExistingImgPath() . '.jpg',
-            dirname(__FILE__) . '/views/img/' . $this->name . $strShop . '.' . $this->getWatermarkExtension($strShop),
+            __DIR__ . '/views/img/' . $this->name . $strShop . '.' . $this->getWatermarkExtension($strShop),
             $file
         );
 
@@ -680,7 +680,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
     private function deleteOldWatermark($strShop)
     {
         foreach (['.jpg', '.gif', '.png'] as $extension) {
-            @unlink(dirname(__FILE__) . '/views/img/' . $this->name . $strShop . $extension);
+            @unlink(__DIR__ . '/views/img/' . $this->name . $strShop . $extension);
         }
     }
 
@@ -702,7 +702,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
         // Probe image file
         $imageExt = 'gif';
         foreach (['png', 'jpg'] as $extension) {
-            if (file_exists(sprintf('%s/views/img/watermark%s.%s', dirname(__FILE__), $strShop, $extension))) {
+            if (file_exists(sprintf('%s/views/img/watermark%s.%s', __DIR__, $strShop, $extension))) {
                 $imageExt = $extension;
                 break;
             }
