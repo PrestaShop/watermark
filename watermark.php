@@ -158,7 +158,7 @@ class Watermark extends Module
         $types = ImageType::getImagesTypes('products');
         $idImageType = [];
         foreach ($types as $type) {
-            if (null !== Tools::getValue('WATERMARK_TYPES_' . (int)$type['id_image_type'])) {
+            if (null !== Tools::getValue('WATERMARK_TYPES_' . (int) $type['id_image_type'])) {
                 $idImageType['WATERMARK_TYPES_' . (int) $type['id_image_type']] = true;
             }
         }
@@ -616,6 +616,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
         $this->context->smarty->assign(array(
             'addons_category' => $category,
         ));
+
         return $this->context->smarty->fetch('module:watermark/views/templates/admin/addons-suggestion.tpl');
     }
 

@@ -23,6 +23,7 @@
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
+
 namespace PrestaShop\Module\Watermark\Addons;
 
 use Doctrine\Common\Cache\FilesystemCache;
@@ -129,6 +130,7 @@ class CategoryFetcher
         $category = $this->getCategoryFromApi($isoCode);
         $category = $this->addTracking($category, $isoCode);
         $category['description'] = $this->getDescription($category);
+
         return $category;
     }
 
@@ -156,6 +158,7 @@ class CategoryFetcher
         if (false !== $apiResponse && !empty($apiResponse['module']) && empty($apiResponse['errors'])) {
             $category = $this->searchCategory($apiResponse['module'], $this->categoryId);
         }
+
         return null !== $category ? $category : $this->defaultData;
     }
 
@@ -178,6 +181,7 @@ class CategoryFetcher
                 }
             }
         }
+
         return null;
     }
 
@@ -208,6 +212,7 @@ class CategoryFetcher
         foreach ($descriptionNode->childNodes as $childNode) {
             $categoryDescription .= $childNode->ownerDocument->saveHTML($childNode);
         }
+
         return !empty($categoryDescription) ? $categoryDescription : $defaultDescription;
     }
 
@@ -238,6 +243,7 @@ class CategoryFetcher
         //Clean link used to fetch description (no need for tracking then)
         $category['clean_link'] = self::ADDONS_BASE_URL . $parsedUrl['path'];
         $category['link'] = self::ADDONS_BASE_URL . $parsedUrl['path'] . '?' . http_build_query($parameters);
+
         return $category;
     }
 }
