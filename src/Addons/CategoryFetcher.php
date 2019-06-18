@@ -118,7 +118,7 @@ class CategoryFetcher
         ;
         $this->factory = new AdvancedCircuitBreakerFactory();
     }
-    
+
     /**
      * @param string $isoCode Two letters iso code to identify the country (ex: en, fr, es, ...)
      *
@@ -131,7 +131,7 @@ class CategoryFetcher
         $category['description'] = $this->getDescription($category);
         return $category;
     }
-    
+
     /**
      * @param string $isoCode
      *
@@ -158,7 +158,7 @@ class CategoryFetcher
         }
         return null !== $category ? $category : $this->defaultData;
     }
-    
+
     /**
      * @param array $categories
      * @param int $searchedCategoryId
@@ -180,7 +180,7 @@ class CategoryFetcher
         }
         return null;
     }
-    
+
     /**
      * @param array $category
      *
@@ -210,7 +210,7 @@ class CategoryFetcher
         }
         return !empty($categoryDescription) ? $categoryDescription : $defaultDescription;
     }
-    
+
     /**
      * Updates link property with a correctly formatted url with tracking parameters
      *
