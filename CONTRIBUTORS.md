@@ -9,3 +9,4 @@ GitHub contributors:
 - PhpMadman
 - Sacha Froment
 - Quetzacoalt91
+- Rodrigo Laurindo
