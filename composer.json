@@ -10,9 +10,11 @@
     }
   ],
   "require": {
-    "php": ">=5.6",
-    "prestashop/circuit-breaker": "^3.0.0"
-  },
+      "php": ">=5.6.0",
+      "prestashop/circuit-breaker": "^3.0.0",
+      "doctrine/cache": "^1.6",
+      "guzzlehttp/cache-subscriber": "dev-master"
+   },
   "autoload": {
     "psr-4": {
       "PrestaShop\\Module\\Watermark\\": "src/"
