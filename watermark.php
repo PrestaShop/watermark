@@ -605,11 +605,11 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
     public function renderAddonsSuggestion()
     {
         $categoryFetcher = new CategoryFetcher(
-            309,
+            465,
             [
-                'name' => 'Labels/stickers/logos',
-                'link' => '/en/309-labels-stickers-logos',
-                'description' => 'Add incentivizing information to your products and your store with PrestaShop logo, label and stickers modules.',
+                'name' => 'Labels & Logos',
+                'link' => '/en/465-labels-logos',
+                'description' => '<h2>Reassure your customers, encourage them to make purchases and make it easier to browse on your e-commerce website by adding badges to your product pages!</h2>For example, you can add “Free delivery”, “-30%”, “New”, “Last articles in stock” or “No. 1 selling product” badges to make your products more visible and ensure they stand out. Also propose badges indicating the composition (100% cotton, 100% organic etc.) or even  icons highlighting each product\'s strengths. You can therefore personalize your store in just a few clicks.',
             ]
         );
         $category = $categoryFetcher->getData($this->context->language->iso_code);
