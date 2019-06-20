@@ -10,3 +10,4 @@ GitHub contributors:
 - Sacha Froment
 - Quetzacoalt91
 - Rodrigo Laurindo
+- Pablo Borowicz
