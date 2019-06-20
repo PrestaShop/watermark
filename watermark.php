@@ -133,7 +133,7 @@ class Watermark extends Module
     public function uninstall()
     {
         if (!$this->removeHtaccessSection()) {
-            $this->context->controller->errors[] = $this->trans('Unable to remove watermark section from .htaccess file', [], 'Module.Watermark.Admin');
+            $this->context->controller->errors[] = $this->trans('Unable to remove watermark section from .htaccess file', [], 'Modules.Watermark.Admin');
         }
 
         return parent::uninstall()
