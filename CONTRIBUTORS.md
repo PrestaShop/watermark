@@ -1,0 +1,13 @@
+GitHub contributors:
+--------------------------------
+- Alex Sampaio
+- AlexEven
+- Francois Gaillard
+- Gregory Roussac
+- Jerome Nadaud
+- Maxime Biloé
+- PhpMadman
+- Sacha Froment
+- Quetzacoalt91
+- Rodrigo Laurindo
+- Pablo Borowicz
