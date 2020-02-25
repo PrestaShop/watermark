@@ -4,6 +4,10 @@
 
 Protect image by watermark.
 
+## Multistore compatibility
+
+This module is partially compatible with the multistore feature. Some of its options might not be available.
+
 ## Contributing
 
 PrestaShop modules are open-source extensions to the PrestaShop e-commerce solution. Everyone is welcome and even encouraged to contribute with their own improvements.
