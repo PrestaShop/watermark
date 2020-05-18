@@ -287,7 +287,6 @@ class watermark extends Module
                         $destImagePath
                     );
                 }
-
             }
         }
 
@@ -449,6 +448,18 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
         return $return;
     }
 
+    private function resizeWatermark($originalFile)
+    {
+        $resize = $this->resize / 100;
+
+        $width = imagesx($originalFile);
+        $height = imagesy($originalFile);
+        $newWidth = $width * $resize;
+        $newHeight = ($height / $width) * $newWidth;
+
+        return [$newWidth, $newHeight];
+    }
+
     /**
      * @param string $imagepath
      * @param string $watermarkpath
@@ -484,22 +495,23 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
             return false;
         }
 
-        [$watermarkWidth, $watermarkHeight] = getimagesize($watermarkpath);
         [$imageWidth, $imageHeight] = getimagesize($imagepath);
+        [$w_width, $w_height] = getimagesize($watermarkpath);
 
-        $resize = $this->resize / 100;
-        $watermarkResize = ImageManager::resize($watermarkpath, $watermarkpath, $watermarkWidth * $resize,
-            $watermarkHeight * $resize);
+        $watermarkSize = $this->resizeWatermark($imagew);
 
-        if (!$watermarkResize) {
-            $this->context->controller->errors[] = $this->trans(
-                'An error occurred while resizing watermark.',
-                [],
-                'Modules.Watermark.Admin'
-            );
+        $watermark = imagecreatetruecolor($watermarkSize[0], $watermarkSize[1]);
 
-            return false;
-        }
+        // integer representation of the color black (rgb: 0,0,0)
+        $background = imagecolorallocate($watermark, 0, 0, 0);
+        // removing the black from the placeholder
+        imagecolortransparent($watermark, $background);
+        imagealphablending($watermark, false);
+        imagesavealpha($watermark, true);
+        imagecopyresampled($watermark, $imagew, 0, 0, 0, 0, $watermarkSize[0], $watermarkSize[1], $w_width, $w_height);
+
+        $watermarkWidth = imagesx($watermark);
+        $watermarkHeight = imagesy($watermark);
 
         if ($this->xAlign === 'middle') {
             $xpos = $imageWidth / 2 - $watermarkWidth / 2 + $Xoffset;
@@ -521,7 +533,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
         }
         if (!$this->imagecopymerge_alpha(
             $image,
-            $imagew,
+            $watermark,
             $xpos,
             $ypos,
             0,
