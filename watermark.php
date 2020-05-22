@@ -302,7 +302,7 @@ RewriteRule [0-9/]+/[0-9]+\\.jpg$ - [F]
 # end ~ module watermark section\n";
 
         $path = _PS_ROOT_DIR_ . '/.htaccess';
-        if (false === file_put_contents($path, $source, FILE_APPEND)) {
+        if (false === file_put_contents($path, $source . file_get_contents($path))) {
             $this->context->controller->errors[] = $this->trans('Unable to add watermark section to the .htaccess file', [], 'Modules.Watermark.Admin');
 
             return false;
