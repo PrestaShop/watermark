@@ -1,0 +1,8 @@
+services:
+  _defaults:
+    public: true
+
+  prestashop.module.watermark.htaccess_manager:
+    class: PrestaShop\Module\Watermark\Htaccess\HtaccessManager
+    arguments:
+      $translator: '@translator'
