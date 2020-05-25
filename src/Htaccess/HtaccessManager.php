@@ -38,7 +38,7 @@ class HtaccessManager
      */
     public function writeHtaccessSection()
     {
-        var_dump($this);die;
+        //var_dump($this);die;
         $adminDir = $this->getAdminDir();
         $source = "\n# start ~ module watermark section
 <IfModule mod_rewrite.c>

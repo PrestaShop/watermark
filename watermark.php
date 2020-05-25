@@ -29,6 +29,7 @@ if (!defined('_PS_VERSION_')) {
 
 use PrestaShop\Module\Watermark\Addons\CategoryFetcher;
 use PrestaShop\Module\Watermark\Htaccess\HtaccessManager;
+use PrestaShop\Module\Watermark\Watermark\WatermarkManager;
 
 /**
  * Class Watermark
@@ -54,6 +55,9 @@ class Watermark extends Module
 
     /** @var HtaccessManager */
     private $htaccessManager;
+
+    /** @var WatermarkManager */
+    private $watermarkManager;
 
     /**
      * Watermark constructor.
@@ -108,7 +112,7 @@ class Watermark extends Module
             $this->warning = $this->trans('Watermark image must be uploaded for this module to work properly.', [], 'Modules.Watermark.Admin');
         }
         $this->htaccessManager = new HtaccessManager($this->context->getTranslator());
-
+        $this->watermarkManager = new WatermarkManager();
     }
 
     /**
@@ -306,7 +310,7 @@ class Watermark extends Module
         }
 
         // First make a watermark image
-        $return = $this->watermarkByImage(
+        $return = $this->watermarkManager->watermarkByImage(
             _PS_PROD_IMG_DIR_ . $image->getExistingImgPath() . '.jpg',
             __DIR__ . '/views/img/' . $this->name . $strShop . '.' . $this->getWatermarkExtension($strShop),
             $file
