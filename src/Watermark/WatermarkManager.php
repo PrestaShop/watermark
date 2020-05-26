@@ -7,6 +7,20 @@ use ImageManager;
 class WatermarkManager
 {
 
+    /** @var string $yAlign */
+    private $yAlign;
+    /** @var string $xAlign */
+    private $xAlign;
+    /** @var int $transparency */
+    private $transparency;
+
+
+    public function __construct($yAlign, $xAlign, $transparency)
+    {
+        $this->yAlign = $yAlign;
+        $this->xAlign = $xAlign;
+        $this->transparency = $transparency;
+    }
 
     /**
      * @param string $imagepath
