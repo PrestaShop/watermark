@@ -13,8 +13,9 @@
       "php": ">=5.6.0",
       "prestashop/circuit-breaker": "^3.0.0",
       "doctrine/cache": "^1.6",
-      "guzzlehttp/cache-subscriber": "dev-master"
-   },
+      "guzzlehttp/cache-subscriber": "dev-master",
+      "ext-gd": "*"
+  },
   "autoload": {
     "psr-4": {
       "PrestaShop\\Module\\Watermark\\": "src/"
