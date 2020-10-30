@@ -2,7 +2,7 @@
 
 ## About
 
-Protect image by watermark.
+Create a watermark to protect images on your store and make your website looks yours.
 
 ## Multistore compatibility
 
