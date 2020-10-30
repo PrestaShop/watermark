@@ -73,7 +73,7 @@ class Watermark extends Module
         parent::__construct();
 
         $this->displayName = $this->trans('Watermark', [], 'Modules.Watermark.Admin');
-        $this->description = $this->trans('Protect images by watermark.', [], 'Modules.Watermark.Admin');
+        $this->description = $this->trans('Create a watermark to protect images on your store and make your website looks yours.', [], 'Modules.Watermark.Admin');
         $this->confirmUninstall = $this->trans(
             'Are you sure you want to delete your details?',
             [],
