@@ -1,5 +1,7 @@
 # Watermark
 
+**This module has been archived, it’s no longer maintained but you still can fork it if you need it for your shop.**
+
 ## About
 
 Create a watermark to protect images on your store and make your website looks yours.
